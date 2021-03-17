@@ -1,0 +1,7 @@
+python=3.8.5
+requests
+numpy
+pandas
+pyyaml
+matplotlib
+flask

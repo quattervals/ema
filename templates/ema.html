@@ -1,0 +1,37 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Ema Experimental</title>
+  <link rel='stylesheet' type="text/css" href="static/style.css">
+  <!-- below line adds an icon to tabs, it's just flask syntax (check docu) -->
+  <!-- check https://www.udemy.com/course/complete-python-developer-zero-to-mastery/learn/lecture/16283292#overview "templating engine". This is jinja template language -->
+  <!-- <link rel="shortcut icon" href="{{ url_for('static', filename='viking.ico') }}"> -->
+<!-- </head> -->
+<!-- <body> -->
+  <!-- About Body <br> -->
+
+  <!-- I' -->
+
+  <!-- <script src='static/script.js'></script> -->
+<!-- </body> -->
+<!-- </html> -->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+   <head>
+      <meta charset="utf-8">
+      <title>Emagramm</title>
+   </head>
+   <body>
+      {% extends "template.html" %}
+      {% block content %}
+      <h1> EMA </h1>
+      <p> Ema stuff: </p>
+      <p> And Here.... </p>
+      <img src="{{ url_for('static', filename='images/test.png') }}" />
+
+
+      {% endblock %}
+   </body>
+</html>

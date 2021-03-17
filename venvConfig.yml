@@ -1,0 +1,8 @@
+name: venv
+channels:
+ - defaults
+dependencies:
+ - numpy
+ - pandas
+ - requests
+prefix: /home/owit/Nextcloud/pyShare/ema/venv

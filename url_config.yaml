@@ -1,0 +1,10 @@
+---
+base_url: 'https://www.meteoschweiz.admin.ch/product/input/radio-soundings/'
+stations:
+  payerne: 'VSST76'
+  stuttgart: 'VSST78'
+  munich: 'VSST77'
+  milano: 'VSST80'
+
+
+
