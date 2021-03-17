@@ -26,6 +26,8 @@ https://betterprogramming.pub/building-your-first-website-with-flask-part-5-e389
 
 https://flask-mobility.readthedocs.io/en/latest/
 
+https://www.w3schools.com/howto/howto_css_four_columns.asp
+https://www.freecodecamp.org/news/how-to-create-an-image-gallery-with-css-grid-e0f0fd666a5c/
 
 # Todo
 - mobile friendly

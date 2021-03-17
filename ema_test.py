@@ -5,6 +5,7 @@ import requests
 import yaml
 import matplotlib.pyplot as plt
 from datetime import datetime
+import re
 
 
 def fetch_raw_data():
@@ -41,74 +42,82 @@ if __name__ == "__main__":
 
     file_list = fetch_raw_data()
 
-    ema = {}
+
 
     raw_file = file_list[3]
 
-    with open(raw_file, 'r') as f:
-        for position, line in enumerate(f):
-            if position == 0:
-                ema["Location"] = line.strip()
-            elif position == 2:
-                lst = line.split()
-                ema["date"] = lst[0].strip()
-                ema["time"] = lst[1].strip()
-            elif position == 4:
-                ema["headers"] = line.split()
-            elif position == 5:
-                ema["units"] = line.split()
+    for raw_file in file_list:
+        ema = {}
+        with open(raw_file, 'r') as f:
+            for position, line in enumerate(f):
+                if position == 0:
+                    ema["Location"] = re.sub('[\s\/]', '_', line.strip()) #remove space and /
+                elif position == 2:
+                    lst = line.split()
+                    ema["date"] = lst[0].strip()
+                    ema["time"] = lst[1].strip()
+                elif position == 4:
+                    ema["headers"] = line.split()
+                elif position == 5:
+                    ema["units"] = line.split()
 
-    ema["df"] = pd.read_csv(raw_file, delim_whitespace=True,
-                            skiprows=7, names=ema["headers"])
+        ema["df"] = pd.read_csv(raw_file, delim_whitespace=True,
+                                skiprows=7, names=ema["headers"])
 
-    print(ema["df"])
+        print(ema["df"])
 
-    # using pandas dataframe is maybe a bit overkill
-    # simply generate numpy arrays
-    ema["data"] = np.genfromtxt(raw_file, skip_header=7)
+        # using pandas dataframe is maybe a bit overkill
+        # simply generate numpy arrays
+        ema["data"] = np.genfromtxt(raw_file, skip_header=7)
 
-    # number crunching
+        # number crunching
 
-    # get height, temp as vectors
-    # simplified with just using numpy and no pandas
-    #h = ema["data"][:,0]
+        # get height, temp as vectors
+        # simplified with just using numpy and no pandas
+        #h = ema["data"][:,0]
 
-    h = ema["df"].loc[:, 'Height'].values
-    h_delta = np.diff(h)
+        h = ema["df"].loc[:, 'Height'].values
+        h_delta = np.diff(h)
 
-    h_mid = (h[:-1] + h[1:]) / 2
+        h_mid = (h[:-1] + h[1:]) / 2
 
-    T = ema["df"].loc[:, 'Temp'].values
-    T_delta = np.diff(T)
-    T_mid = (T[:-1] + T[1:]) / 2
+        T = ema["df"].loc[:, 'Temp'].values
+        T_delta = np.diff(T)
+        T_mid = (T[:-1] + T[1:]) / 2
 
-    T_grad = T_delta / h_delta * 100
+        T_grad = T_delta / h_delta * 100
 
-    plt.close('all')
+        plt.close('all')
 
-    fig, ax = plt.subplots()
+        fig, ax = plt.subplots()
 
-    for ix, hstripe in enumerate(h_mid):
-        if T_grad[ix] < 100 and T_grad[ix] >= -0.5:
-            plt.axhspan(
-                hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='red', alpha=0.5)
-        elif T_grad[ix] < -0.5 and T_grad[ix] >= -0.8:
-            plt.axhspan(
-                hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='green', alpha=0.5)
-        elif T_grad[ix] < 0.8 and T_grad[ix] >= -100:
-            plt.axhspan(
-                hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='blue', alpha=0.5)
+        for ix, hstripe in enumerate(h_mid):
+            if T_grad[ix] < 100 and T_grad[ix] >= -0.5:
+                plt.axhspan(
+                    hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='red', alpha=0.5)
+            elif T_grad[ix] < -0.5 and T_grad[ix] >= -0.8:
+                plt.axhspan(
+                    hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='green', alpha=0.5)
+            elif T_grad[ix] < 0.8 and T_grad[ix] >= -100:
+                plt.axhspan(
+                    hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='blue', alpha=0.5)
 
-    plt.plot(T_grad, h_mid)
-    plt.plot(T_mid, h_mid)
-    plt.grid(True, which="both")
-    plt.ylabel('h')
-    plt.xlabel('grad')
-    # plt.legend(M.T)
-    plt.title('temp grad')
-    # plt.ion()
-    # plt.show()
-    plt.savefig('static/test.png')
+        plt.plot(T_grad, h_mid)
+        plt.plot(T_mid, h_mid)
+        plt.grid(True, which="both")
+        plt.ylabel('h')
+        plt.xlabel('grad')
+        # plt.legend(M.T)
+        plt_title = "Temp Grad in " + ema["Location"] + " on " + ema["date"] + " , at " + ema["time"]
+        plt.title(plt_title)
+        # plt.ion()
+        # plt.show()
+
+
+        figure_name = 'static/images/' + re.sub('[\s\/]', '_', ema["Location"])
+
+
+        plt.savefig(figure_name)
 
 
     '''
