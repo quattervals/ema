@@ -29,6 +29,10 @@ https://flask-mobility.readthedocs.io/en/latest/
 https://www.w3schools.com/howto/howto_css_four_columns.asp
 https://www.freecodecamp.org/news/how-to-create-an-image-gallery-with-css-grid-e0f0fd666a5c/
 
+https://www.w3schools.com/howto/howto_js_image_grid.asp
+
+https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout
+
 # Todo
 - mobile friendly
 - nicer CSS

@@ -1,63 +1,46 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <title>Ema Experimental</title>
-  <link rel='stylesheet' type="text/css" href="static/style.css">
-  <!-- below line adds an icon to tabs, it's just flask syntax (check docu) -->
-<!-- check https://www.udemy.com/course/complete-python-developer-zero-to-mastery/learn/lecture/16283292#overview "templating engine". This is jinja template language -->
-<!-- <link rel="shortcut icon" href="{{ url_for('static', filename='viking.ico') }}"> -->
-<!-- </head> -->
-<!-- <body> -->
-<!-- About Body <br> -->
-
-<!-- I' -->
-
-<!-- <script src='static/script.js'></script> -->
-<!-- </body> -->
-<!-- </html> -->
-
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 
 <head>
    <meta charset="utf-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+   <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta http-equiv="X-UA-Compatible" content="ie=edge"> -->
 
    <!-- <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,400i|Nunito:300,300i" rel="stylesheet"> -->
-   <!-- <link rel="stylesheet" href="static/css/template.css"> -->
+   <link rel="stylesheet" href="static/css/template.css">
    <!-- <link rel="shortcut icon" type="image/png" href="img/favicon.png"> -->
    <title>Emagramm</title>
 </head>
 
 <body>
-   {% extends "template.html" %}
-   {% block content %}
+   <!-- {% extends "template.html" %} -->
+   <!-- {% block content %} -->
    <!-- <h1> EMA </h1> -->
    <!-- <p> Ema stuff: </p> -->
    <!-- <p> And Here.... </p> -->
-   <!-- <img src="{{ url_for('static', filename='images/test.png') }}" /> -->
-   <div class="container">
-      <div class=”gallery”>
-         <figure class="gallery__item gallery__item--1">
-            <img src="{{ url_for('static', filename='images/PAYERNE_(06610).png') }}" class="gallery__img" alt="Image 1">
-         </figure>
-         <figure class="gallery__item gallery__item--2">
-            <img src="{{ url_for('static', filename='images/STUTTGART_SCHNARRENBERG_(10739).png') }}" class="gallery__img" alt="Image 2">
-         </figure>
-         <figure class="gallery__item gallery__item--3">
-            <img src="{{ url_for('static', filename='images/MILANO_LINATE_(16080).png') }}" class="gallery__img" alt="Image 3">
-         </figure>
-         <figure class="gallery__item gallery__item--4">
-            <img src="{{ url_for('static', filename='images/MUENCHEN-OBERSCHLEIBSHEIM_(10868).png') }}" class="gallery__img" alt="Image 4">
-         </figure>
+
+   <div class="wrapper">
+      <div class=”one">
+         eins
+         <img src="{{ url_for('static', filename='images/PAYERNE_(06610).png') }}" alt="Image 1">
+      </div>
+      <div clss="two">
+         zweit
+         <img src="{{ url_for('static', filename='images/PAYERNE_(06610).png') }}" alt="Image 1">
+      </div>
+      <div class="three">
+         drei
+         <img src="{{ url_for('static', filename='images/PAYERNE_(06610).png') }}" alt="Image 1">
+      </div>
+      <div class="four">
+         vier
+         <img src="{{ url_for('static', filename='images/PAYERNE_(06610).png') }}" alt="Image 1">
       </div>
    </div>
 
 
 
-   {% endblock %}
+   <!-- {% endblock %} -->
 </body>
 
 </html>
