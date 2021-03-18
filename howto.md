@@ -18,8 +18,10 @@ This doesn't seem to work
 Activate using the full path
 `conda activate /home/owit/Nextcloud/pyShare/ema/venv`
 
+Update from requirements.txt
+`conda install  --file requirements.txt`
 
-Resources
+## Resources
 
 https://betterprogramming.pub/building-your-first-website-with-flask-part-2-6324721be2ae
 https://betterprogramming.pub/building-your-first-website-with-flask-part-5-e389fff0c8ec
@@ -35,5 +37,9 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout
 
 # Todo
 - mobile friendly
+  https://travishorn.com/responsive-grid-in-2-minutes-with-css-grid-layout-4842a41420fe
+  - worked well
+  https://www.w3schools.com/howto/howto_js_topnav.asp
+  - nice menu
 - nicer CSS
 

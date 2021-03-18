@@ -23,6 +23,26 @@
             "cwd": "${workspaceFolder}",
             "args":[            ],
             "python": "/home/badile/anaconda3/envs/emavenv/bin/python"
+        },
+        {
+            "name": "Emabx",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/ema_test.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "args":[            ],
+            "python": "/home/owit/anaconda3/envs/emavenv/bin/python"
+        }
+        {
+            "name": "serverbx",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/server.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "args":[            ],
+            "python": "/home/owit/anaconda3/envs/emavenv/bin/python"
         }
     ]
 }

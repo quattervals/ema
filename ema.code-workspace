@@ -1,0 +1,10 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"python.pythonPath": "/home/owit/anaconda3/envs/emavenv/bin/python"
+	}
+}
