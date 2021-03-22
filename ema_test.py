@@ -64,17 +64,27 @@ if __name__ == "__main__":
         ema["df"] = pd.read_csv(raw_file, delim_whitespace=True,
                                 skiprows=7, names=ema["headers"])
 
-        print(ema["df"])
 
+        # Alternative ################################################
         # using pandas dataframe is maybe a bit overkill
         # simply generate numpy arrays
-        ema["data"] = np.genfromtxt(raw_file, skip_header=7)
-
-        # number crunching
-
+        # ema["data"] = np.genfromtxt(raw_file, skip_header=7)
         # get height, temp as vectors
         # simplified with just using numpy and no pandas
         #h = ema["data"][:,0]
+
+
+
+        # Clean nan-like values from df
+        df = ema["df"] #df is a reference to ema["df"] and used here as shorthand
+        nan_vals = (9999.9, 999)
+        for header in ema["headers"]:
+            df.drop(df[df[header].isin(nan_vals)].index, inplace=True)
+
+
+        print(ema["df"])
+
+        # number crunching ----------------------------------------------------
 
         h = ema["df"].loc[:, 'Height'].values
         h_delta = np.diff(h)
