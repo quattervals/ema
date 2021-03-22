@@ -41,5 +41,12 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout
   - worked well
   https://www.w3schools.com/howto/howto_js_topnav.asp
   - nice menu
-- nicer CSS
+- expand image when clicked on
+  - https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_modal_img
+  - http://jsfiddle.net/vngx/qxyx4u73/
 
+
+## Plot
+- restrict temp, heigth to 0...5000m, always same format
+- nicer colors
+- check gradient ranges
