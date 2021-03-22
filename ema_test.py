@@ -81,6 +81,8 @@ if __name__ == "__main__":
         for header in ema["headers"]:
             df.drop(df[df[header].isin(nan_vals)].index, inplace=True)
 
+        #remove duplicate rows
+        df.drop_duplicates(keep='first', inplace=True)
 
         print(ema["df"])
 
