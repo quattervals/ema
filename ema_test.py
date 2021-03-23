@@ -8,16 +8,13 @@ from datetime import datetime
 import re
 
 
-def fetch_raw_data():
+def fetch_raw_data(url_config: dict) -> list:
     '''
     sample URL of milano
     https://www.meteoschweiz.admin.ch/product/input/radio-soundings/VSST80.LSSW_20210302_0000.txt
 
     https://www.meteoschweiz.admin.ch/home/mess-und-prognosesysteme/atmosphaere/radiosondierung.html?query=emagramm&pageIndex=0&tab=search_tab
     '''
-
-    with open('url_config.yaml') as f:
-        url_config = yaml.safe_load(f)
 
     now = datetime.now()
 
@@ -48,6 +45,8 @@ def read_raw_data(raw_file: str) -> dict:
     Returns dict with a data frame of the measurements plus meta data
     """
     ema = {}
+    ema["rawfile"] = raw_file
+
     with open(raw_file, 'r') as f:
         for position, line in enumerate(f):
             if position == 0:
@@ -152,21 +151,25 @@ def grad_plot(ema: dict) -> None:
 
     plt.savefig(figure_name)
 
+def stat_code(ema: dict):
+    ema["loc_code"] = re.search('VSST[0-9]{2}', ema["rawfile"])[0]
+
+
 
 if __name__ == "__main__":
 
-    file_list = fetch_raw_data()
+    with open('url_config.yaml') as f:
+        url_config = yaml.safe_load(f)
+
+    file_list = fetch_raw_data(url_config)
+
+    stations = {}
 
     for raw_file in file_list:
         ema = read_raw_data(raw_file)
         grad_calc(ema)
         grad_plot(ema)
-
-
-
-
-
-
+        stat_code(ema)
 
 
     print("done")
