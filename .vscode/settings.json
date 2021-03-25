@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/usr/bin/python",
+    "python.pythonPath": "/home/owit/anaconda3/envs/emavenv/bin/python",
     "python.formatting.autopep8Path": "/home/badile/anaconda3/bin/autopep8",
     "python.terminal.activateEnvironment": false,
     "python.formatting.autopep8Args": [

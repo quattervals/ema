@@ -6,7 +6,9 @@ import yaml
 import matplotlib.pyplot as plt
 from datetime import datetime
 import re
-
+import os
+import copy
+import pickle
 
 def fetch_raw_data(url_config: dict) -> list:
     '''
@@ -22,12 +24,12 @@ def fetch_raw_data(url_config: dict) -> list:
     time = "_{:02d}00.txt".format(12 if now.hour > 12 else 0)
 
     file_list = []
-    for station, stat_code in url_config["stations"].items():
-        print(station, stat_code)
-        req_str = url_config["base_url"] + stat_code + date + time
+    for station in url_config["stations"]:
+        print(station["code"])
+        req_str = str(url_config["base_url"]) + str(station["code"]) + date + time
         res = requests.get(req_str)
 
-        file_name = "rawfiles/" + station + "_" + stat_code + date + time
+        file_name = "rawfiles/" + str(station["name"]) + "_" + str(station["code"]) + date + time
         with open(file_name, 'w') as f:
             f.write(res.text)
             file_list.append(file_name)
@@ -50,7 +52,7 @@ def read_raw_data(raw_file: str) -> dict:
     with open(raw_file, 'r') as f:
         for position, line in enumerate(f):
             if position == 0:
-                ema["Location"] = re.sub('[\s\/]', '_', line.strip()) #remove space and /
+                pass # this is not really used # ema["Location"] = re.sub('[\s\/]', '_', line.strip()) #remove space and /
             elif position == 2:
                 lst = line.split()
                 ema["date"] = lst[0].strip()
@@ -84,6 +86,8 @@ def read_raw_data(raw_file: str) -> dict:
 
     #date time object to keep track of the time easily
     ema["datetime"] = datetime(*map(int, (ema["date"].split('-')[::-1])), hour=int(ema["time"][0:2])) # need to reverse the date from file to match Y,M,D order
+
+    ema["loc_code"] = re.search('VSST[0-9]{2}', ema["rawfile"])[0]
 
     return ema
 
@@ -142,34 +146,44 @@ def grad_plot(ema: dict) -> None:
     plt.ylabel('h')
     plt.xlabel('grad')
     # plt.legend(M.T)
-    plt_title = "Temp Grad in " + ema["Location"] + " on " + ema["date"] + " , at " + ema["time"]
+    plt_title = "Temp Grad in " + ema["loc_code"] + " on " + ema["date"] + " , at " + ema["time"]
     plt.title(plt_title)
     # plt.ion()
     # plt.show()
 
-    figure_name = 'static/images/' + re.sub('[\s\/]', '_', ema["Location"])
+    figure_name = 'static/images/' + re.sub('[\s\/]', '_', ema["loc_code"])
 
     plt.savefig(figure_name)
-
-def stat_code(ema: dict):
-    ema["loc_code"] = re.search('VSST[0-9]{2}', ema["rawfile"])[0]
 
 
 
 if __name__ == "__main__":
 
     with open('url_config.yaml') as f:
-        url_config = yaml.safe_load(f)
+        station_config = yaml.safe_load(f)
 
-    file_list = fetch_raw_data(url_config)
+    if os.path.isfile(station_config["storage_file"]):
+        with open(station_config["storage_file"] , 'rb') as f:
+            stations = pickle.load(f)
+    else:
+        stations = copy.deepcopy(station_config["stations"])
 
-    stations = {}
 
+    file_list = fetch_raw_data(station_config)
     for raw_file in file_list:
         ema = read_raw_data(raw_file)
         grad_calc(ema)
         grad_plot(ema)
-        stat_code(ema)
 
+        for station in stations:
+            if station["code"] == ema["loc_code"]:
+
+                # is the time stamp of the current ema newer than the stored one?
+                if (c_ema := station.get("c_ema")) and c_ema["datetime"] < ema["datetime"]:
+                    station["p_ema"] = station["c_ema"] # the current ema is now the previous ema
+                    station["c_ema"] = ema
+
+    with open(station_config["storage_file"], 'wb') as f:
+        pickle.dump(stations, f)
 
     print("done")
