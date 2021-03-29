@@ -111,13 +111,16 @@ def grad_calc(ema: dict) -> None:
     """
 
     h = ema["df"].loc[:, 'Height'].values
-    h_delta = np.diff(h)
+    h_delta = np.diff(h.astype(float))
 
     h_mid = (h[:-1] + h[1:]) / 2
 
     T = ema["df"].loc[:, 'Temp'].values
     T_delta = np.diff(T)
     T_mid = (T[:-1] + T[1:]) / 2
+
+    #avoid division by zero
+    h_delta[h_delta == 0] = 0.1
 
     T_grad = T_delta / h_delta * 100
 
@@ -143,18 +146,21 @@ def grad_plot(ema: dict) -> None:
 
     plt.close('all')
 
+    # pick colors from https://www.w3schools.com/colors/colors_picker.asp
     for ix, hstripe in enumerate(h_mid):
-        if T_grad[ix] > -0.5:
-            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='red', alpha=0.5)
+        if T_grad[ix] > 0:
+            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='#ff8000', alpha=0.5)
+        elif 0 >= T_grad[ix] > -0.5:
+            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='#e6faff', alpha=0.5)
         elif -0.5 >= T_grad[ix] > -0.6:
-            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='yellow', alpha=0.5)
+            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='#99ff99', alpha=0.5)
         elif -0.6 >= T_grad[ix] > -0.8:
-            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='green', alpha=0.5)
+            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='#33cc33', alpha=0.5)
         elif -0.8 >= T_grad[ix] > -100:
-            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='orange', alpha=0.5)
+            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='#008000', alpha=0.5)
 
     plt.plot(T_grad, h_mid)
-    plt.plot(T_mid, h_mid)
+    plt.plot(T_mid, h_mid, color='#3F3F3F')
     plt.grid(True, which="both")
     plt.ylabel('Altitude AMSL [m]')
     plt.xlabel('Temperature [°C]')
