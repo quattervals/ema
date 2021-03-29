@@ -11,8 +11,8 @@ def about():
 
 
 @app.route('/ema')
-def ema():
-    return render_template('ema.html')
+def cema():
+    return render_template('cema.html')
 
 @app.route('/rema')
 def rema():
