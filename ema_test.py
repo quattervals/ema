@@ -4,7 +4,7 @@ import pandas as pd
 import requests
 import yaml
 import matplotlib.pyplot as plt
-from datetime import datetime
+import datetime
 import re
 import os
 import copy
@@ -18,21 +18,27 @@ def fetch_raw_data(url_config: dict) -> list:
     https://www.meteoschweiz.admin.ch/home/mess-und-prognosesysteme/atmosphaere/radiosondierung.html?query=emagramm&pageIndex=0&tab=search_tab
     '''
 
-    now = datetime.now()
-
-    date = ".LSSW_{}{:02d}{:02d}".format(now.year, now.month, now.day)
-    time = "_{:02d}00.txt".format(12 if now.hour > 12 else 0)
-
+    point_in_time = ('current' , 'previous')
     file_list = []
-    for station in url_config["stations"]:
-        print(station["code"])
-        req_str = str(url_config["base_url"]) + str(station["code"]) + date + time
-        res = requests.get(req_str)
+    now = datetime.datetime.now(datetime.timezone.utc)
 
-        file_name = "rawfiles/" + str(station["name"]) + "_" + str(station["code"]) + date + time
-        with open(file_name, 'w') as f:
-            f.write(res.text)
-            file_list.append(file_name)
+    for pit in point_in_time:
+
+        if pit == 'previous':
+            now = now - datetime.timedelta(hours=12)
+
+        date = ".LSSW_{}{:02d}{:02d}".format(now.year, now.month, now.day)
+        time = "_{:02d}00.txt".format(12 if now.hour > 12 else 0)
+
+        for station in url_config["stations"]:
+            print(station["code"])
+            req_str = str(url_config["base_url"]) + str(station["code"]) + date + time
+            res = requests.get(req_str)
+
+            file_name = "rawfiles/" + str(station["name"]) + "_" + str(station["code"]) + date + time
+            with open(file_name, 'w') as f:
+                f.write(res.text)
+                file_list.append(file_name)
 
     return file_list
 
@@ -85,7 +91,16 @@ def read_raw_data(raw_file: str) -> dict:
     df.drop_duplicates(keep='first', inplace=True)
 
     #date time object to keep track of the time easily
-    ema["datetime"] = datetime(*map(int, (ema["date"].split('-')[::-1])), hour=int(ema["time"][0:2])) # need to reverse the date from file to match Y,M,D order
+    ema["datetime"] = datetime.datetime(*map(int, (ema["date"].split('-')[::-1])), hour=int(ema["time"][0:2]), tzinfo=datetime.timezone.utc) # need to reverse the date from file to match Y,M,D order
+
+
+    #if ema["datetime"] is less than 12 hours in the past from now, it is the current one
+    #if ema["datetime"] is more than 12 hours in the past from now, it is the previous one
+    now = datetime.datetime.now(datetime.timezone.utc)
+    if now - ema["datetime"] < datetime.timedelta(hours=12):
+        ema["cp"] = "current"
+    else:
+        ema["cp"] = "previous"
 
     ema["loc_code"] = re.search('VSST[0-9]{2}', ema["rawfile"])[0]
 
@@ -151,7 +166,8 @@ def grad_plot(ema: dict) -> None:
     # plt.ion()
     # plt.show()
 
-    figure_name = 'static/images/' + re.sub('[\s\/]', '_', ema["loc_code"])
+    #different file name depending on time of the ema
+    figure_name = 'static/images/' + re.sub('[\s\/]', '_', ema["loc_code"]) + '_' + ema["cp"]
 
     plt.savefig(figure_name)
 
@@ -162,12 +178,7 @@ if __name__ == "__main__":
     with open('url_config.yaml') as f:
         station_config = yaml.safe_load(f)
 
-    if os.path.isfile(station_config["storage_file"]):
-        with open(station_config["storage_file"] , 'rb') as f:
-            stations = pickle.load(f)
-    else:
-        stations = copy.deepcopy(station_config["stations"])
-
+    stations = copy.deepcopy(station_config["stations"])
 
     file_list = fetch_raw_data(station_config)
     for raw_file in file_list:
@@ -177,11 +188,13 @@ if __name__ == "__main__":
 
         for station in stations:
             if station["code"] == ema["loc_code"]:
-
-                # is the time stamp of the current ema newer than the stored one?
-                if (c_ema := station.get("c_ema")) and c_ema["datetime"] < ema["datetime"]:
-                    station["p_ema"] = station["c_ema"] # the current ema is now the previous ema
+                if ema["cp"] == 'current':
                     station["c_ema"] = ema
+                elif ema["cp"] == 'previous':
+                    station["p_ema"] = ema
+                else:
+                    print("neither current nor previous ema")
+                    print(ema)
 
     with open(station_config["storage_file"], 'wb') as f:
         pickle.dump(stations, f)
