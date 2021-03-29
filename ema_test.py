@@ -18,7 +18,7 @@ def fetch_raw_data(url_config: dict) -> list:
     https://www.meteoschweiz.admin.ch/home/mess-und-prognosesysteme/atmosphaere/radiosondierung.html?query=emagramm&pageIndex=0&tab=search_tab
     '''
 
-    point_in_time = ('current' , 'previous')
+    point_in_time = ('current', 'previous')
     file_list = []
     now = datetime.datetime.now(datetime.timezone.utc)
 
@@ -31,7 +31,6 @@ def fetch_raw_data(url_config: dict) -> list:
         time = "_{:02d}00.txt".format(12 if now.hour > 12 else 0)
 
         for station in url_config["stations"]:
-            print(station["code"])
             req_str = str(url_config["base_url"]) + str(station["code"]) + date + time
             res = requests.get(req_str)
 
@@ -58,7 +57,7 @@ def read_raw_data(raw_file: str) -> dict:
     with open(raw_file, 'r') as f:
         for position, line in enumerate(f):
             if position == 0:
-                pass # this is not really used # ema["Location"] = re.sub('[\s\/]', '_', line.strip()) #remove space and /
+                pass  # this is not really used # ema["Location"] = re.sub('[\s\/]', '_', line.strip()) #remove space and /
             elif position == 2:
                 lst = line.split()
                 ema["date"] = lst[0].strip()
@@ -71,7 +70,6 @@ def read_raw_data(raw_file: str) -> dict:
     ema["df"] = pd.read_csv(raw_file, delim_whitespace=True,
                             skiprows=7, names=ema["headers"])
 
-
     # Alternative ################################################
     # using pandas dataframe is maybe a bit overkill
     # simply generate numpy arrays
@@ -80,22 +78,21 @@ def read_raw_data(raw_file: str) -> dict:
     # simplified with just using numpy and no pandas
     #h = ema["data"][:,0]
 
-
     # Clean nan-like values from df
-    df = ema["df"] #df is a reference to ema["df"] and used here as shorthand
+    df = ema["df"]  # df is a reference to ema["df"] and used here as shorthand
     nan_vals = (9999.9, 999)
     for header in ema["headers"]:
         df.drop(df[df[header].isin(nan_vals)].index, inplace=True)
 
-    #remove duplicate rows
+    # remove duplicate rows
     df.drop_duplicates(keep='first', inplace=True)
 
-    #date time object to keep track of the time easily
-    ema["datetime"] = datetime.datetime(*map(int, (ema["date"].split('-')[::-1])), hour=int(ema["time"][0:2]), tzinfo=datetime.timezone.utc) # need to reverse the date from file to match Y,M,D order
+    # date time object to keep track of the time easily
+    ema["datetime"] = datetime.datetime(*map(int, (ema["date"].split('-')[::-1])), hour=int(ema["time"][0:2]),
+                                        tzinfo=datetime.timezone.utc)  # need to reverse the date from file to match Y,M,D order
 
-
-    #if ema["datetime"] is less than 12 hours in the past from now, it is the current one
-    #if ema["datetime"] is more than 12 hours in the past from now, it is the previous one
+    # if ema["datetime"] is less than 12 hours in the past from now, it is the current one
+    # if ema["datetime"] is more than 12 hours in the past from now, it is the previous one
     now = datetime.datetime.now(datetime.timezone.utc)
     if now - ema["datetime"] < datetime.timedelta(hours=12):
         ema["cp"] = "current"
@@ -105,6 +102,7 @@ def read_raw_data(raw_file: str) -> dict:
     ema["loc_code"] = re.search('VSST[0-9]{2}', ema["rawfile"])[0]
 
     return ema
+
 
 def grad_calc(ema: dict) -> None:
     """
@@ -123,7 +121,8 @@ def grad_calc(ema: dict) -> None:
 
     T_grad = T_delta / h_delta * 100
 
-    ema["grad"] = pd.DataFrame(data=np.array([h_mid,h_delta,T_mid,T_grad]).T, columns=["h", "dH", "T", "dT"])
+    ema["grad"] = pd.DataFrame(data=np.array([h_mid, h_delta, T_mid, T_grad]).T, columns=["h", "dH", "T", "dT"])
+
 
 def grad_plot(ema: dict) -> None:
     """
@@ -145,32 +144,33 @@ def grad_plot(ema: dict) -> None:
     plt.close('all')
 
     for ix, hstripe in enumerate(h_mid):
-        if T_grad[ix] < 100 and T_grad[ix] >= -0.5:
-            plt.axhspan(
-                hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='red', alpha=0.5)
-        elif T_grad[ix] < -0.5 and T_grad[ix] >= -0.8:
-            plt.axhspan(
-                hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='green', alpha=0.5)
-        elif T_grad[ix] < 0.8 and T_grad[ix] >= -100:
-            plt.axhspan(
-                hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='blue', alpha=0.5)
+        if T_grad[ix] > -0.5:
+            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='red', alpha=0.5)
+        elif -0.5 >= T_grad[ix] > -0.6:
+            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='yellow', alpha=0.5)
+        elif -0.6 >= T_grad[ix] > -0.8:
+            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='green', alpha=0.5)
+        elif -0.8 >= T_grad[ix] > -100:
+            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='orange', alpha=0.5)
 
     plt.plot(T_grad, h_mid)
     plt.plot(T_mid, h_mid)
     plt.grid(True, which="both")
-    plt.ylabel('h')
-    plt.xlabel('grad')
+    plt.ylabel('Altitude AMSL [m]')
+    plt.xlabel('Temperature [°C]')
+    plt.ylim(0, 5000)
+    plt.xlim(-30, 10)
+
     # plt.legend(M.T)
-    plt_title = "Temp Grad in " + ema["loc_code"] + " on " + ema["date"] + " , at " + ema["time"]
+    plt_title = "Temp Grad in " + ema["loc_code"] + " on " + ema["date"] + ", at " + ema["time"]
     plt.title(plt_title)
     # plt.ion()
     # plt.show()
 
-    #different file name depending on time of the ema
-    figure_name = 'static/images/' + re.sub('[\s\/]', '_', ema["loc_code"]) + '_' + ema["cp"]
+    # file name depending on time of the ema
+    figure_name = 'static/images/' + re.sub(r'[\s\/]', '_', ema["loc_code"]) + '_' + ema["cp"] + '.svg'
 
     plt.savefig(figure_name)
-
 
 
 if __name__ == "__main__":

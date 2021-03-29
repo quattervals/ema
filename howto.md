@@ -49,4 +49,7 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout
 ## Plot
 - restrict temp, heigth to 0...5000m, always same format
 - nicer colors
-- check gradient ranges
+- check gradient ranges+
+
+
+- http://www.flypara.ch/gut-zu-wissen/31-emagramm
