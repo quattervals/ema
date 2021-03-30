@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 
-   <script src='static/js/script.js'></script>
-
 <head>
    <meta charset="utf-8">
    <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,4 +25,21 @@
    </div>
    {% block content %}
    {% endblock %}
+
+
+   <!-- Modal Code -->
+   <div class="modal" id="overlay">
+      <!-- <div id="image"> -->
+      <div class="modal-content">
+         <img src="" id="modalImg">
+      </div>
+   </div>
+
+
+   <script type=text/javascript src="{{
+      url_for('static', filename='js/jquery.js') }}"></script>
+   <script type=text/javascript src="{{
+      url_for('static', filename='js/script.js') }}"></script>
+
+
 </body>
