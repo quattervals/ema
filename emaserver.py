@@ -18,6 +18,6 @@ def rema():
 
 if __name__ == "__main__":
 
-    ematool.ema()
+    #ematool.ema()
     app.run(debug=True, host='192.168.0.29')
     # app.run(debug=True)
