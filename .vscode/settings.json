@@ -1,9 +1,0 @@
-{
-    "python.pythonPath": "/home/badile/anaconda3/bin/python",
-    "python.formatting.autopep8Path": "/home/badile/anaconda3/bin/autopep8",
-    "python.terminal.activateEnvironment": false,
-    "python.formatting.autopep8Args": [
-        "--max-line-length=150",
-        "--aggressive"
-    ]
-}

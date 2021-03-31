@@ -6,9 +6,15 @@ import yaml
 import matplotlib.pyplot as plt
 import datetime
 import re
-import os
 import copy
 import pickle
+
+code_location = {
+    'VSST76' : "Payerne",
+    'VSST77' : "München",
+    'VSST78' : "Stuttgart",
+    'VSST80' : "Milano"
+}
 
 def fetch_raw_data(url_config: dict) -> list:
     '''
@@ -150,14 +156,14 @@ def grad_plot(ema: dict) -> None:
     for ix, hstripe in enumerate(h_mid):
         if T_grad[ix] > 0:
             plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='#ff8000', alpha=0.5)
-        elif 0 >= T_grad[ix] > -0.5:
-            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='#e6faff', alpha=0.5)
+        elif 0   >= T_grad[ix] > -0.5:
+            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='#f2f2f2', alpha=0.5)
         elif -0.5 >= T_grad[ix] > -0.6:
-            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='#99ff99', alpha=0.5)
+            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='#66ff99', alpha=0.5)
         elif -0.6 >= T_grad[ix] > -0.8:
             plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='#33cc33', alpha=0.5)
         elif -0.8 >= T_grad[ix] > -100:
-            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='#008000', alpha=0.5)
+            plt.axhspan(hstripe - 0.5 * h_delta[ix], hstripe + 0.5 * h_delta[ix], facecolor='#0099ff', alpha=0.5)
 
     plt.plot(T_grad, h_mid)
     plt.plot(T_mid, h_mid, color='#3F3F3F')
@@ -168,7 +174,7 @@ def grad_plot(ema: dict) -> None:
     plt.xlim(-30, 10)
 
     # plt.legend(M.T)
-    plt_title = "Temp Grad in " + ema["loc_code"] + " on " + ema["date"] + ", at " + ema["time"]
+    plt_title = "Gradient in " + code_location[ema["loc_code"]] + " on " + ema["date"] + ", at " + ema["time"]
     plt.title(plt_title)
     # plt.ion()
     # plt.show()
@@ -178,9 +184,10 @@ def grad_plot(ema: dict) -> None:
 
     plt.savefig(figure_name)
 
-
-if __name__ == "__main__":
-
+def ema():
+    """
+    Wraps all the Emagrammstuff in function
+    """
     with open('url_config.yaml') as f:
         station_config = yaml.safe_load(f)
 
@@ -205,4 +212,7 @@ if __name__ == "__main__":
     with open(station_config["storage_file"], 'wb') as f:
         pickle.dump(stations, f)
 
+if __name__ == "__main__":
+
+    ema()
     print("done")

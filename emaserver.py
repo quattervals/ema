@@ -1,3 +1,4 @@
+import ematool
 from flask import Flask, render_template
 app = Flask(__name__)
 
@@ -25,5 +26,7 @@ def hello_user(username=None):
 
 
 if __name__ == "__main__":
-   app.run(debug=True, host='192.168.0.29')
+
+    ematool.ema()
+    app.run(debug=True, host='192.168.0.29')
     # app.run(debug=True)

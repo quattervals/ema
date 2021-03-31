@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *.pickle
 
+.vscode
+*.code-workspace
 emavenv/
 static/images/
 retired/
