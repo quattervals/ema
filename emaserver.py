@@ -6,12 +6,7 @@ app = Flask(__name__)
 def home():
     return render_template('home.html')
 
-@app.route('/about')
-def about():
-    return render_template('about.html') #render_template() expects html files to be in 'templates' directory
-
-
-@app.route('/ema')
+@app.route('/cema')
 def cema():
     return render_template('cema.html')
 
@@ -19,10 +14,6 @@ def cema():
 def rema():
     return render_template('rema.html')
 
-# an url like http://127.0.0.1:5000/brudi uses the variable 'name' in the associated html file
-@app.route('/<username>')
-def hello_user(username=None):
-    return render_template('about.html', name=username)
 
 
 if __name__ == "__main__":
