@@ -1,4 +1,3 @@
-
 import numpy as np
 import pandas as pd
 import requests
@@ -8,6 +7,7 @@ import datetime
 import re
 import copy
 import pickle
+import os
 
 code_location = {
     'VSST76' : "Payerne",
@@ -41,6 +41,8 @@ def fetch_raw_data(url_config: dict) -> list:
             res = requests.get(req_str)
 
             file_name = "rawfiles/" + str(station["name"]) + "_" + str(station["code"]) + date + time
+
+            os.makedirs(os.path.dirname(file_name), exist_ok=True)
             with open(file_name, 'w') as f:
                 f.write(res.text)
                 file_list.append(file_name)
@@ -135,13 +137,10 @@ def grad_calc(ema: dict) -> None:
 
 def grad_plot(ema: dict) -> None:
     """
-    Makes saves plots
+    Makes and saves plots
 
     Resources:
-
     https://matplotlib.org/3.1.1/gallery/subplots_axes_and_figures/axhspan_demo.html#sphx-glr-gallery-subplots-axes-and-figures-axhspan-demo-py
-    https://matplotlib.org/3.1.1/gallery/lines_bars_and_markers/span_regions.html#sphx-glr-gallery-lines-bars-and-markers-span-regions-py
-    http://pyhogs.github.io/colormap-examples.html
     """
     grad = ema["grad"]
 
