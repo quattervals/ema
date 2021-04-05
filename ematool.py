@@ -212,6 +212,12 @@ def ema():
         pickle.dump(stations, f)
 
 if __name__ == "__main__":
+    # make the script work with paths relative to current script path
+    abspath = os.path.abspath(__file__)
+    dname = os.path.dirname(abspath)
+    os.chdir(dname)
 
     ema()
-    print("done")
+
+    now = datetime.datetime.now(datetime.timezone.utc)
+    print("Done Gradient updates at " + str(now))
