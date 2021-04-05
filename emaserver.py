@@ -1,9 +1,15 @@
 import ematool
-from flask import Flask, render_template
+from flask import Flask, render_template, request
+
+
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/', methods = ['POST', 'GET'])
 def home():
+    #run ema on reload button click
+    if request.method == "POST":
+        ematool.ema()
+
     return render_template('home.html')
 
 @app.route('/cema')
