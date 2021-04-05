@@ -12,13 +12,13 @@ def home():
 
     return render_template('home.html')
 
-@app.route('/cema')
-def cema():
-    return render_template('cema.html')
+@app.route('/cgrad')
+def cgrad():
+    return render_template('cgrad.html')
 
-@app.route('/rema')
-def rema():
-    return render_template('rema.html')
+@app.route('/rgrad')
+def rgrad():
+    return render_template('rgrad.html')
 
 
 
